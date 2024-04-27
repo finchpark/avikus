@@ -58,5 +58,5 @@ def delete_vessel(id: int, db: Session=Depends(get_db)):
     if db_vessel is None:
         raise HTTPException(status_code=404, detail=("Vessel [%d] not found" %id))
     
-    crud.delete_vessel(db, id)
+    crud.delete_vessel(db, db_vessel)
     return JSONResponse(content={"message": ("Vessel [%d] deleted" %id)})
