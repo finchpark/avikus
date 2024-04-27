@@ -18,7 +18,7 @@ def get_db():
         db.close()
 
 # vessels 리스트 가져오기
-@app.get("vessels/", response_model=List[schemas.Vessel])
+@app.get("/vessels/", response_model=List[schemas.Vessel])
 async def read_vessels(skip: int=0, limit: int=100, db: Session=Depends(get_db)):
     vessels = crud.get_vessels(db, skip, limit)
     return vessels
