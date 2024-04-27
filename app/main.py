@@ -35,9 +35,10 @@ async def read_vessel(id: int, db: Session=Depends(get_db)):
 # vessel 생성
 @app.post("/vessels/", response_model=schemas.Vessel)
 async def create_vessel(vessel: schemas.VesselCreate, db: Session=Depends(get_db)):
-    db_vessel = crud.get_vessel(db, id=vessel.id)
-    if db_vessel:
-        raise HTTPException(status_code=400, detail="ID has already registered")
+    # ID가 넘어온다면..
+    #db_vessel = crud.get_vessel(db, id=vessel.id)
+    #if db_vessel:
+    #    raise HTTPException(status_code=400, detail="ID has already registered")
     
     return crud.create_vessel(db=db, vessel=vessel)
 

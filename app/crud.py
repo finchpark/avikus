@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
 
 import models, schemas
 
@@ -13,7 +14,10 @@ def get_vessel(db: Session, id: int):
 
 # Create data
 def create_vessel(db: Session, vessel: schemas.VesselCreate):
-	db_vessel = models.Vessel(**vessel.dict())
+	vid = db.query(func.max(models.Vessel.id)).scalar()
+	vid = vid + 1 if vid is not None else 1
+
+	db_vessel = models.Vessel(**vessel.dict(), id=vid)
 	db.add(db_vessel)
 	db.commit()
 	db.refresh(db_vessel)
