@@ -16,3 +16,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base class 생성
 Base = declarative_base()
+
+def create_tables():
+	Base.metadata.create_all(bind=engine)
+	print("[Success] Tables created")
