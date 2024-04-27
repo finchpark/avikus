@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, DataTime
+from sqlalchemy import Column, Integer, String, Text, DateTime
 
-from database import Base
+from app.database import Base
 
 # model 생성
 class Vessel(Base):
@@ -9,6 +9,6 @@ class Vessel(Base):
 
 	# Model의 Column 속성
 	id = Column(Integer, primary_key=True)
-	created = Column(DataTime, nulable=False)
+	created = Column(DateTime, nullable=False)
 	name = Column(String, nullable=False)
 	content = Column(Text)

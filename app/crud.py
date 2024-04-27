@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-import models, schemas
+from app import models, schemas
 
 # Create, Read, Update, Delete
 

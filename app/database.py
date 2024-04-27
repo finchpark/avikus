@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # SQLAlchemy로 사용할 DB URL
-SQLALCHEMY_DATABASE_URL = "sqllite:///./avikus.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///avikus.db"
 #SQLALCHEMY_DATABASE_URL = "postgresql://user:passwrod@postgresserver/db"
 
 # Engine 생성
