@@ -1,30 +1,61 @@
-from typing import Union
-from fastapi import FastAPI
-from pydantic import BaseModel
+from typing import List
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+
+from app import crud, database, models, schemas
+
+# Table 생성
+models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 
-class Item(BaseModel):
-    name: str
-    description: Union[str, None] = None
-    price: float
+def get_db():
+    db = database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# vessels 리스트 가져오기
+@app.get("vessels/", response_model=List[schemas.Vessel])
+async def read_vessels(skip: int=0, limit: int=100, db: Session=Depends(get_db)):
+    vessels = crud.get_vessels(db, skip, limit)
+    return vessels
+
+# ID로 vessel 조회
+@app.get("/vessels/{id}", response_model=schemas.Vessel)
+async def read_vessel(id: int, db: Session=Depends(get_db)):
+    db_vessel = crud.get_vessel(db, id)
+    if db_vessel is None:
+        raise HTTPException(status_code=404, detail=("Vessel [%d] not found" %id))
     
-@app.get("/")
-async def read_root():
-    return "This is root path from MyAPI"
+    return db_vessel
 
-@app.get("/vessels/{id}")
-async def read_vessel(id: int, q: Union[str,  None] = None):
-    return {"id": id, "q": q}
+# vessel 생성
+@app.post("/vessels/", response_model=schemas.Vessel)
+async def create_vessel(vessel: schemas.VesselCreate, db: Session=Depends(get_db)):
+    db_vessel = crud.get_vessel(db, id=vessel.id)
+    if db_vessel:
+        raise HTTPException(status_code=400, detail="ID has already registered")
+    
+    return crud.create_vessel(db=db, vessel=vessel)
 
-@app.post("/vessels/")
-async def create_vessel(item: Item):
-    return item
+# ID에 해당하는 vessel Update
+@app.put("/vessels/{id}", response_model=schemas.Vessel)
+async def update_vessel(id: int, updated_vessel: schemas.VesselCreate, db: Session=Depends(get_db)):
+    db_vessel = crud.get_vessel(db, id)
+    if db_vessel is None:
+        raise HTTPException(status_code=404, detail=("Vessel [%d] not found" %id))
+    
+    return crud.update_vessel(db, db_vessel, updated_vessel)
 
-@app.put("/vessels/{id}")
-async def update_vessel(id: int, item: Item):
-    result = {"id": id, **item.dict()}
-
+# ID로 vessel 삭제
 @app.delete("/vessels/{id}")
-def delete_vessel(id: int):
-    return {"deleted": id}
+def delete_vessel(id: int, db: Session=Depends(get_db)):
+    db_vessel = crud.get_vessel(db, id)
+    if db_vessel is None:
+        raise HTTPException(status_code=404, detail=("Vessel [%d] not found" %id))
+    
+    crud.delete_vessel(db, id)
+    return JSONResponse(content={"message": ("Vessel [%d] deleted" %id)})
