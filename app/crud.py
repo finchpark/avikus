@@ -17,7 +17,7 @@ def create_vessel(db: Session, vessel: schemas.VesselCreate):
 	vid = db.query(func.max(models.Vessel.id)).scalar()
 	vid = vid + 1 if vid is not None else 1
 
-	db_vessel = models.Vessel(**vessel.dict(), id=vid)
+	db_vessel = models.Vessel(**vessel.model_dump(), id=vid)
 	db.add(db_vessel)
 	db.commit()
 	db.refresh(db_vessel)
@@ -26,7 +26,7 @@ def create_vessel(db: Session, vessel: schemas.VesselCreate):
 
 # Update data
 def update_vessel(db: Session, vessel: models.Vessel, updated_vessel: schemas.VesselCreate):
-	for key, value in updated_vessel.dict().items():
+	for key, value in updated_vessel.model_dump().items():
 		setattr(vessel, key, value)
 
 	db.commit()
